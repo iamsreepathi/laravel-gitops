@@ -40,6 +40,12 @@
     },
     "scripts": {
         "analyse": "phpstan analyse --memory-limit=1G",
+        "lint": [
+            "pint --parallel"
+        ],
+        "test:lint": [
+            "pint --parallel --test"
+        ],
         "setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
