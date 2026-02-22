@@ -3,7 +3,7 @@
 FROM composer:2.8 AS vendor
 WORKDIR /app
 
-COPY src/composer.json src/composer.lock ./
+COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
     --no-interaction \
@@ -15,10 +15,10 @@ RUN composer install \
 FROM node:22-alpine AS frontend
 WORKDIR /app
 
-COPY src/package.json src/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY src/ ./
+COPY . ./
 RUN npm run build
 
 FROM php:8.3-fpm-alpine AS runtime
@@ -49,12 +49,9 @@ RUN set -eux; \
     apk del .build-deps; \
     rm -rf /tmp/pear
 
-COPY src/ ./
+COPY . ./
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
-COPY dockerfiles/php/conf.d/zz-app.ini /usr/local/etc/php/conf.d/zz-app.ini
-COPY dockerfiles/php/conf.d/zz-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
-COPY dockerfiles/php/php-fpm.d/zz-www.conf /usr/local/etc/php-fpm.d/zz-www.conf
 
 RUN set -eux; \
     mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache; \

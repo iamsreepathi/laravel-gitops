@@ -1,13 +1,8 @@
 name: linter
 
 on:
-  push:
-    branches:
-      - develop
-      - main
   pull_request:
     branches:
-      - develop
       - main
 
 permissions:
@@ -23,11 +18,27 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-php8.4-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.4-
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
         run: |
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          npm install
+          npm ci
 
       - name: Run Pint
         run: composer lint

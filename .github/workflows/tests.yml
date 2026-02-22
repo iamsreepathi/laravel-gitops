@@ -1,13 +1,8 @@
 name: tests
 
 on:
-  push:
-    branches:
-      - develop
-      - main
   pull_request:
     branches:
-      - develop
       - main
 
 jobs:
@@ -28,10 +23,20 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-php${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php${{ matrix.php-version }}-
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install Node Dependencies
         run: npm ci
