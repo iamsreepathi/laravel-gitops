@@ -4,13 +4,13 @@ FROM composer:2.8 AS vendor
 WORKDIR /app
 
 COPY composer.json composer.lock ./
+COPY . ./
 RUN composer install \
     --no-dev \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader \
-    --classmap-authoritative \
-    --no-scripts
+    --classmap-authoritative
 
 FROM node:22-alpine AS frontend
 WORKDIR /app
