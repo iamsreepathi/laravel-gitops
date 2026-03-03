@@ -21,7 +21,7 @@ RUN npm ci
 COPY . ./
 RUN npm run build
 
-FROM php:8.3-fpm-alpine AS runtime
+FROM php:8.4-fpm-alpine AS runtime
 WORKDIR /var/www/html
 
 RUN set -eux; \
